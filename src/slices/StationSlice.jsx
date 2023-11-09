@@ -6,7 +6,9 @@ import { API_URL } from "../config/Config";
 export const AllStations = createAsyncThunk("GetMaster", async (thunkAPI) => {
   try {
     const response = await axios.get(`${API_URL}Station/GetMaster`);
+     console.log("response", response);
     return response.data;
+   
   } catch (error) {
     return thunkAPI.rejectWithValue(error);
   }

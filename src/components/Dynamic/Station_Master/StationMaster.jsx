@@ -8,11 +8,12 @@ const StationMaster = () => {
   const dispatch = useDispatch();
   useEffect(() => {
     fetchStationdata();
-  }, [dispatch]);
+  },[dispatch]);
   const fetchStationdata = async () => {
     const masters = await dispatch(AllStations());
   };
    const MasterStation = useSelector((state) => state.station.MasterStaions); 
+   console.log("MasterStation", MasterStation);
      
   return (
     <div>
