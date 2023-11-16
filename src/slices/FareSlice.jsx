@@ -16,7 +16,6 @@ export const getFare = createAsyncThunk(
   }
 );
 
-
 export const FareSlice = createSlice({
   name: "faredetails",
   initialState: {

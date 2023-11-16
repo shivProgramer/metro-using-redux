@@ -12,6 +12,7 @@ import About from "./components/Static/More/About";
 import Lucknow from "./Pages/Lucknow";
 import Privacy from "./components/Static/More/Privacy";
 import DevelopedBy from "./components/Static/More/DevelopedBy";
+import MetroRouteFinder from "./test";
 
 function App() {
   return (
@@ -22,17 +23,21 @@ function App() {
           <Route path="/" element={<Home />} />
           {/* <Route path="/lucknow" element={<Lucknow />} /> */}
           <Route path="/metroStation/:id/" element={<AllStations />} />
-          <Route path="/metroStation/:id/from-:from/to-:to" element={<AllStations />} />
+          <Route
+            path="/metroStation/:id/from-:from/to-:to"
+            element={<AllStations />}
+          />
           <Route path="/routes/:id" element={<Track />} />
-           <Route path="/Blog/:id" element={<Blog />} />
-           <Route path="/details/:id" element={<Details/>} />
-           <Route path="/more/:id" element={<MoreOptipn />} />
+          <Route path="/Blog/:id" element={<Blog />} />
+          <Route path="/details/:id" element={<Details />} />
+          <Route path="/more/:id" element={<MoreOptipn />} />
           <Route path="/timing/:id" element={<Timing />} />
           <Route path="/disclaimer/:id" element={<Disclaimer />} />
           <Route path="/about/:id" element={<About />} />
           <Route path="/privacy/:id" element={<Privacy />} />
           <Route path="/developedBy/:id" element={<DevelopedBy />} />
           <Route path="/comingSoon" element={<ComingSoon />} />
+          <Route path="/test" element={<MetroRouteFinder/>} />
         </Routes>
       </BrowserRouter>
     </div>

@@ -9,8 +9,11 @@ import "./StationOptions.css";
 import { useDispatch, useSelector } from "react-redux";
 import { AllStationOfMasterStation, stationBetween } from "../../../slices/StationSlice";
 import { getFare } from "../../../slices/FareSlice";
+import jaipurJsonData from "../../../JsonData";
+
 
 const StationOptions = () => {
+  console.log("jaipurJsonData", jaipurJsonData);
   const { id, from, to } = useParams();
   const dispatch = useDispatch();
   const [stationOption, setStationOption] = useState({
@@ -52,6 +55,7 @@ const StationOptions = () => {
   /* -------- station between  call funtion  ---------------------------------------------------*/
   const stationBitween = async (from, to) => {
     const bitween = dispatch(stationBetween({ from, to }));
+    // console.log("bitween")
   };
 
   const GetAllData = () => {
@@ -237,7 +241,7 @@ const StationOptions = () => {
                     style={{
                       background: `linear-gradient(to right, ${
                         themColors ? themColors : "initial"
-                      }, #2D2D47)`,
+                      }, #2D2D47)`
                     }}
                   >
                     {/* station summary from accounding to route id */}
