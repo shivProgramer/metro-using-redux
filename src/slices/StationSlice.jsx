@@ -38,6 +38,7 @@ export const stationBetween = createAsyncThunk(
       const response = await axios.get(
         `${API_URL}Station/StationsBetweenTwoPoints?startStation=${from}&endStation=${to}`
       );
+      console.log("stationbitweendata", response);
       return response.data;
     } catch (error) {
       return thunkAPI.rejectWithValue(error);

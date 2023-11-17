@@ -170,7 +170,7 @@ const StationOptions = () => {
               ).replace(/%20/g, "-")}-metro-station-${encodeURIComponent(
                 getStationName
               ).replace(/%20/g, "-")}`}
-              className="btn btn-outline-danger float-end"
+              className="btn btn-outline-danger float-end text-warning"
             >
               Get Fare
             </Link>
@@ -241,7 +241,7 @@ const StationOptions = () => {
                     style={{
                       background: `linear-gradient(to right, ${
                         themColors ? themColors : "initial"
-                      }, #2D2D47)`
+                      }, #2D2D47)`,
                     }}
                   >
                     {/* station summary from accounding to route id */}
