@@ -13,7 +13,7 @@ import jaipurJsonData from "../../../JsonData";
 
 
 const StationOptions = () => {
-  console.log("jaipurJsonData", jaipurJsonData);
+  // console.log("jaipurJsonData", jaipurJsonData);
   const { id, from, to } = useParams();
   const dispatch = useDispatch();
   const [stationOption, setStationOption] = useState({
@@ -51,12 +51,14 @@ const StationOptions = () => {
   /* --------getfare call funtion  ---------------------------------------------------*/
   const fareValue = async (from, to) => {
     const fare = dispatch(getFare({ from, to }));
+    
   };
   /* -------- station between  call funtion  ---------------------------------------------------*/
   const stationBitween = async (from, to) => {
     const bitween = dispatch(stationBetween({ from, to }));
-    // console.log("bitween")
+
   };
+ 
 
   const GetAllData = () => {
     const cleanFromStation = from
@@ -75,6 +77,7 @@ const StationOptions = () => {
   useEffect(() => {
     dispatch(AllStationOfMasterStation(id));
   }, []);
+  
   const allstatonOfMaster = useSelector(
     (state) => state.station.AllStationMstr
   );

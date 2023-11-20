@@ -11,7 +11,7 @@ function MetroRouteFinder() {
   const [endStationRouteId, setEndStationRouteId] = useState(null);
   const [endStation_id, setEndStationSno] = useState(null);
 
- const [betweenStation, setbetweenStation] = useState(null);
+  const [betweenStation, setbetweenStation] = useState([]);
 
   const handleFromChange = (e) => {
     setFromStation(e.target.value);
@@ -33,13 +33,46 @@ function MetroRouteFinder() {
       }
     });
   }, [fromStation, toStation]);
+  let StationVal = [];
 
-       const handleGetValue = () => {
-         if(startStationRouteId === endStationRouteId){
-            
-           }
-        };
-
+  const handleGetValue = () => {
+    if (
+      startStationRouteId !== null &&
+      endStationRouteId !== null &&
+      startStationRouteId === endStationRouteId
+    ) {
+      const allstation = jaipurJsonData.map((station) => {
+        if (
+          station.station_ID >= startStation_id &&
+          station.station_ID <= endStation_id
+        ) {
+          console.log(" station.station_ID", station.station_ID);
+          console.log(
+            "startStation_id endStation_id",
+            startStation_id,
+            endStation_id
+          );
+          StationVal.push(station.station_Name);
+          setbetweenStation(StationVal);
+        } else if (
+          station.station_ID <= startStation_id &&
+          station.station_ID >= endStation_id
+        ) {
+          StationVal.push(station.station_Name);
+          // Sort in descending order based on the index
+          setbetweenStation(
+            StationVal.sort(
+              (a, b) =>
+                jaipurJsonData.findIndex((item) => item.station_Name === b) -
+                jaipurJsonData.findIndex((item) => item.station_Name === a)
+            )
+          );
+        }
+      });
+    } else {
+      alert(" Route Change Here ");
+    }
+  };
 
   return (
     <>
@@ -66,6 +99,19 @@ function MetroRouteFinder() {
         </select>{" "}
         {"  "}
         <button onClick={handleGetValue}>Get value</button>
+      </div>
+
+      <div>
+        <h2 id="heading" className="ms-3">
+          {`Station between ${fromStation} and ${toStation}`}
+        </h2>
+        {betweenStation.map((stBetween, index) => (
+          <>
+            <li className="ms-5" key={index}>
+              {stBetween}
+            </li>
+          </>
+        ))}
       </div>
     </>
   );
