@@ -87,17 +87,7 @@ const jaipurJsonData = [
     station_Code: "RANR",
     isJunction: "No",
   },
-  {
-    sno: 292,
-    metro_ID: 3,
-    station_ID: 9,
-    route_ID: 1,
-    station_Name: "Sindhi Camp",
-    latitude: "26.9252° N",
-    longitude: "75.8011° E",
-    station_Code: "SICA",
-    isJunction: "No",
-  },
+ 
   {
     sno: 293,
     metro_ID: 3,
@@ -318,6 +308,7 @@ const jaipurJsonData = [
     station_Code: "ADS",
     isJunction: "No",
   },
+
 ];
 
 export default jaipurJsonData;
