@@ -34,6 +34,7 @@ export const AllStationOfMasterStation = createAsyncThunk(
 export const stationBetween = createAsyncThunk(
   "stationBetween",
   async ({ from, to }, thunkAPI) => {
+    console.log(`from, ${from} and to ${to} `)
     try {
       const response = await axios.get(
         `${API_URL}Station/StationsBetweenTwoPoints?startStation=${from}&endStation=${to}`

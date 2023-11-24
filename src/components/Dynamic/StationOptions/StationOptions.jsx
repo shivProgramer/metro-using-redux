@@ -9,11 +9,9 @@ import "./StationOptions.css";
 import { useDispatch, useSelector } from "react-redux";
 import { AllStationOfMasterStation, stationBetween } from "../../../slices/StationSlice";
 import { getFare } from "../../../slices/FareSlice";
-import jaipurJsonData from "../../../JsonData";
 
 
 const StationOptions = () => {
-  // console.log("jaipurJsonData", jaipurJsonData);
   const { id, from, to } = useParams();
   const dispatch = useDispatch();
   const [stationOption, setStationOption] = useState({
@@ -33,7 +31,6 @@ const StationOptions = () => {
 
   console.log("stationBetween", stationBetweenValue);
   // -----------(end)-------------------------------->
-
   // -------- get color ---------------
   useEffect(() => {
     const themeClr = async () => {
@@ -130,7 +127,7 @@ const StationOptions = () => {
                 }}
               >
                 <option value={ParamFromStation || ""}>
-                  {ParamFromStation || "--Select--"}
+                  {ParamFromStation  || "--Select--"}
                 </option>
                 {allstatonOfMaster.map((item, index) => {
                   return (

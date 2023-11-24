@@ -1,17 +1,18 @@
 import React, { useState, useEffect } from "react";
 import jaipurJsonData from "./JsonData";
+import { stationBetween } from "./slices/StationSlice";
+import { useDispatch } from "react-redux";
 
 function MetroRouteFinder() {
   // State variables to store input values and result stations
   const [fromStation, setFromStation] = useState("");
   const [toStation, setToStation] = useState("");
-
   const [startStationRouteId, setStartStationRouteId] = useState(null);
   const [startStation_id, setStartStationId] = useState(null);
   const [endStationRouteId, setEndStationRouteId] = useState(null);
   const [endStation_id, setEndStationId] = useState(null);
-
   const [betweenStation, setbetweenStation] = useState([]);
+  const dispatch = useDispatch();
 
   const handleFromChange = (e) => {
     setFromStation(e.target.value);
@@ -20,86 +21,102 @@ function MetroRouteFinder() {
   const handleToChange = (e) => {
     setToStation(e.target.value);
   };
-  useEffect(() => {
-    jaipurJsonData.forEach((stationData) => {
-      if (stationData.station_Name === fromStation) {
-        setStartStationRouteId(stationData.route_ID);
-        setStartStationId(stationData.station_ID);
-      }
 
-      if (stationData.station_Name === toStation) {
-        setEndStationRouteId(stationData.route_ID);
-        setEndStationId(stationData.station_ID);
+    const handleGetValue = async (from, to) => {
+      const bitweenStation = await dispatch(stationBetween({from,   to}));
+      // console.log("bitweenStation",bitweenStation);
+    };
+ 
+
+
+  // useEffect(() => {
+  //   jaipurJsonData.forEach((stationData) => {
+  //     if (stationData.station_Name === fromStation) {
+  //       setStartStationRouteId(stationData.route_ID);
+  //       setStartStationId(stationData.station_ID);
+  //     }
+
+  //     if (stationData.station_Name === toStation) {
+  //       setEndStationRouteId(stationData.route_ID);
+  //       setEndStationId(stationData.station_ID);
        
-      }
-    });
-  }, [fromStation, toStation]);
+  //     }
+  //   });
+  // }, [fromStation, toStation]);
 
-  let StationVal = [];
-
-  const handleGetValue = () => {
-    if (
-      startStationRouteId !== null &&
-      endStationRouteId !== null &&
-      startStationRouteId === endStationRouteId
-    ) {
-      jaipurJsonData.map((station) => {
-        if (
-          station.station_ID >= startStation_id &&
-          station.station_ID <= endStation_id
-        ) {
+  // let StationVal = [];
+  // let isJun = null;
+  
+  // const handleGetValue = () => {
+  //   if (
+  //     startStationRouteId !== null &&
+  //     endStationRouteId !== null &&
+  //     startStationRouteId === endStationRouteId
+  //   ) {
+  //     jaipurJsonData.map((station) => {
+  //       if (
+  //         station.station_ID >= startStation_id &&
+  //         station.station_ID <= endStation_id
+  //       ) {
         
-          StationVal.push(station.station_Name);
-          setbetweenStation(StationVal);
-        } else if (
-          station.station_ID <= startStation_id &&
-          station.station_ID >= endStation_id
-        ) {
-          StationVal.push(station.station_Name);
-          // ---------- Sort in descending order based on the index ------------
-          setbetweenStation(
-            StationVal.sort(
-              (a, b) =>
-                jaipurJsonData.findIndex((item) => item.station_Name === b) -
-                jaipurJsonData.findIndex((item) => item.station_Name === a)
-            )
-          );
-          // ------------ end sort ---------
-        }
-      });
-    } else {
-      if (
-        startStationRouteId !== null &&
-        endStationRouteId !== null &&
-        startStationRouteId !== endStationRouteId
-      ){
-        jaipurJsonData.map((station) => {
-          if (
-            station.station_ID >= startStation_id &&
-            station.station_ID <= endStation_id
-          ) {
-          
-            StationVal.push(station.station_Name);
-            setbetweenStation(StationVal);
-          } else if (
-            station.station_ID <= startStation_id &&
-            station.station_ID >= endStation_id
-          ) {
-            StationVal.push(station.station_Name);
-            // ---------- Sort in descending order based on the index ------------
-            setbetweenStation(
-              StationVal.sort(
-                (a, b) =>
-                  jaipurJsonData.findIndex((item) => item.station_Name === b) -
-                  jaipurJsonData.findIndex((item) => item.station_Name === a)
-              )
-            );
-            // ------------ end sort ---------
-          }
-        });
-      }
-    }
-  };
+  //         StationVal.push(station.station_Name);
+  //         setbetweenStation(StationVal);
+  //       } else if (
+  //         station.station_ID <= startStation_id &&
+  //         station.station_ID >= endStation_id
+  //       ) {
+  //         StationVal.push(station.station_Name);
+  //         // ---------- Sort in descending order based on the index ------------
+  //         setbetweenStation(
+  //           StationVal.sort(
+  //             (a, b) =>
+  //               jaipurJsonData.findIndex((item) => item.station_Name === b) -
+  //               jaipurJsonData.findIndex((item) => item.station_Name === a)
+  //           )
+  //         );
+  //         // ------------ end sort ---------
+  //       }
+  //     });
+  //   } else {
+  //     if (
+  //       startStationRouteId !== null &&
+  //       endStationRouteId !== null &&
+  //       startStationRouteId !== endStationRouteId
+  //     ){
+  //       jaipurJsonData.map((station) => {
+  //         if (
+  //           station.station_ID >= startStation_id &&
+  //           station.station_ID <= endStation_id 
+  //         ) {
+  //           if(station.isJunction = "yes"){
+  //             isJun = station;
+  //           }
+  //           StationVal.push(station.station_Name);
+  //           setbetweenStation(StationVal);
+  //         } else if (
+  //           station.station_ID <= startStation_id &&
+  //           station.station_ID >= endStation_id
+  //         ) {
+  //           if(station.isJunction = "yes"){
+  //             isJun = station;
+  //           }
+  //           StationVal.push(station.station_Name);
+  //           // ---------- Sort in descending order based on the index ------------
+  //           setbetweenStation(
+  //             StationVal.sort(
+  //               (a, b) =>
+  //                 jaipurJsonData.findIndex((item) => item.station_Name === b) -
+  //                 jaipurJsonData.findIndex((item) => item.station_Name === a)
+  //             )
+  //           );
+  //           // ------------ end sort ---------
+  //         }
+  //       });
+  //     }
+  //   }
+  // };
+
+
 
   return (
     <>
@@ -126,7 +143,7 @@ function MetroRouteFinder() {
           ))}
         </select>{" "}
         {"  "}
-        <button onClick={handleGetValue}>Get value</button>
+        <button onClick={()=>handleGetValue(fromStation,toStation)}>Get value</button>
       </div>
 
       <div>
