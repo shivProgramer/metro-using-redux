@@ -9,6 +9,7 @@ import "./StationOptions.css";
 import { useDispatch, useSelector } from "react-redux";
 import { AllStationOfMasterStation, stationBetween } from "../../../slices/StationSlice";
 import { getFare } from "../../../slices/FareSlice";
+import { configureStore } from "@reduxjs/toolkit";
 
 
 const StationOptions = () => {
@@ -22,14 +23,27 @@ const StationOptions = () => {
   const [ParamFromStation, setParamFromStation] = useState();
   const [ParamToStation, setParamToStation] = useState();
   const [themColors, setThemColors] = useState(null);
+  const [Start_Route_id, setStart_Route_id] = useState(null);
+  const [Start_Station_id, setStart_Station_id] = useState(null);
+  const [Start_Station_Sno, setStart_Station_Sno] = useState(null);
+
+  const [End_Route_id, setEnd_Route_id] = useState(null);
+  const [End_Station_id, setEnd_Station_id] = useState(null);
+  const [End_Station_Sno, setEnd_Station_Sno] = useState(null);
+  const [SortBetweenData, setSortBetweenData] = useState([]);
+  const [IsJunction, setIsJunction] = useState(null);
+  
   // ------ get data from redux (start) ------------>
   const fareloading = useSelector((state) => state.fare.loading);
   const Fare = useSelector((state) => state.fare.fare);
   const stationBetweenValue = useSelector(
     (state) => state.station.StationBetween
   );
-
-  console.log("stationBetween", stationBetweenValue);
+  const allstatonOfMaster = useSelector(
+    (state) => state.station.AllStationMstr
+  );
+  console.log("allstatonOfMaster",allstatonOfMaster);
+  // console.log("stationBetween", stationBetweenValue);
   // -----------(end)-------------------------------->
   // -------- get color ---------------
   useEffect(() => {
@@ -55,8 +69,105 @@ const StationOptions = () => {
     const bitween = dispatch(stationBetween({ from, to }));
 
   };
- 
+  //***************   */ station summary from accounding to route id  **************
+  // console.log("allstationOfMaster",allstatonOfMaster)
+   useEffect(() => {
+    if (allstatonOfMaster !== null || allstatonOfMaster.length !== 0) {
+      allstatonOfMaster.forEach(async (item) => {
+        if (item.station_Name === stationOption.From) {
+         await setStart_Route_id(item.route_ID);
+         await setStart_Station_id(item.station_ID);
+         await setStart_Station_Sno(item.sno);
+        }
+        if (item.station_Name === stationOption.To) {
+         await setEnd_Route_id(item.route_ID);
+          await setEnd_Station_id(item.station_ID);
+          await setEnd_Station_Sno(item.sno);
+           console.log("End_Station_Sno",End_Station_Sno)
+        }
+      }); 
+    }
+  }, [stationOption.From, stationOption.To]);
 
+  
+  let StationVal = [];
+   const handleGetValue = () => {
+    // debugger
+    if(allstatonOfMaster !== null || allstatonOfMaster.length !== 0){
+      if (
+        Start_Route_id !== null &&
+        End_Route_id !== null &&
+        Start_Route_id === End_Route_id
+      ) {
+        allstatonOfMaster.map((station) => {
+          if (
+            station.sno >= Start_Station_Sno &&
+            station.sno <= End_Station_Sno
+          ) {
+          
+            StationVal.push(station.station_Name);
+            setSortBetweenData(StationVal);
+          } else if (
+            station.sno <= Start_Station_Sno &&
+            station.sno >= End_Station_Sno
+          ) {
+            StationVal.push(station.station_Name);
+            // ---------- Sort in descending order based on the index ------------
+            setSortBetweenData(
+              StationVal.sort(
+                (a, b) =>
+                allstatonOfMaster.findIndex((item) => item.station_Name === b) -
+                allstatonOfMaster.findIndex((item) => item.station_Name === a)
+              )
+            );
+            // ------------ end sort ---------
+          }
+        });
+      } 
+      else {
+        if (
+          Start_Route_id !== null &&
+          End_Route_id !== null &&
+          Start_Route_id !== End_Route_id
+        ){
+          allstatonOfMaster.map((station) => {
+            if (
+              station.sno >= Start_Station_Sno &&
+              station.sno <= End_Station_Sno
+            ) {
+              if(station.isJunction = "yes"){
+                setIsJunction(station);
+              }
+              StationVal.push(station.station_Name);
+              setSortBetweenData(StationVal);
+            } else if (
+              station.sno <= Start_Station_Sno &&
+              station.sno >= End_Station_Sno 
+            ) { 
+                if(station.isJunction = "yes"){
+                  setIsJunction(station);
+              }
+              StationVal.push(station.station_Name);
+              // ---------- Sort in descending order based on the index ------------
+              setSortBetweenData(
+                StationVal.sort(
+                  (a, b) =>
+                  allstatonOfMaster.findIndex((item) => item.station_Name === b) -
+                  allstatonOfMaster.findIndex((item) => item.station_Name === a)
+                )
+              );
+              // ------------ end sort ---------
+            }
+  
+          });
+        }
+      }     
+    } 
+  };
+
+  //**********************   end  ********************************
+
+  
   const GetAllData = () => {
     const cleanFromStation = from
       ? from.replace(/-/g, " ").replace(/ /g, " ")
@@ -71,17 +182,15 @@ const StationOptions = () => {
   };
 
 //  -------- call AllStationOfMasterStation method  -----------
+
   useEffect(() => {
     dispatch(AllStationOfMasterStation(id));
   }, []);
   
-  const allstatonOfMaster = useSelector(
-    (state) => state.station.AllStationMstr
-  );
-
    if (allstatonOfMaster === null || allstatonOfMaster.length === 0) {
      return <HomeLoader />;
    }
+
 
 
   /* -------- For from Station ---------------------------------------------------*/
@@ -100,8 +209,10 @@ const StationOptions = () => {
       To: newToValue,
     }));
   };
- 
  const getStationName = JSON.parse(localStorage.getItem("Station_Name")).name;
+
+
+
   return (
     <>
       <div className="container">
@@ -170,7 +281,8 @@ const StationOptions = () => {
               ).replace(/%20/g, "-")}-metro-station-${encodeURIComponent(
                 getStationName
               ).replace(/%20/g, "-")}`}
-              className="btn btn-outline-danger float-end text-warning"
+              className="btn btn-outline-danger float-end text-warning"  
+              onClick={handleGetValue}         
             >
               Get Fare
             </Link>
@@ -266,7 +378,7 @@ const StationOptions = () => {
                           </div>
 
                           {/* route image */}
-                          {stationBetweenValue.map((items, index) => {
+                          {SortBetweenData.map((items, index) => {
                             return (
                               <div
                                 key={index}
@@ -295,7 +407,7 @@ const StationOptions = () => {
                         </div>
                         {/* all station from start to end  */}
                         <div className=" col-md-6 col-9">
-                          {stationBetweenValue.map((items, index) => {
+                          {SortBetweenData.map((items, index) => {
                             return (
                               <h6 className="p-2 text-white" key={index}>
                                 <i className="bi bi-train-front"></i>
@@ -309,7 +421,7 @@ const StationOptions = () => {
                                       )
                                     }
                                   >
-                                    {items.station_Name}
+                                    {items}
                                   </span>
                                 </NavLink>
                               </h6>

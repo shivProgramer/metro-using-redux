@@ -29,10 +29,9 @@ const StationMaster = () => {
                 MasterStation.filter(
                   (station) =>
                     station.name === "Lucknow" ||
-                    station.name === "Kochi" ||
                     station.name === "Jaipur" ||
                     station.name === "Mumbai" ||
-                    station.name === "Gurgaon"
+                    station.name === "Ahmedabad"
                 ).map((station) => {
                   return (
                     <NavLink
