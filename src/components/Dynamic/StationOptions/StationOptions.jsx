@@ -2,15 +2,17 @@ import React, { useEffect, useState } from "react";
 import MetroCard from "../Merto_card/MetroCard";
 import { Link, NavLink } from "react-router-dom";
 import Loader from "../../Static/Loader/Loader";
-import { useParams} from "react-router-dom";
+import { useParams } from "react-router-dom";
 import HomeLoader from "../../Static/Loader/HomeLoader";
 import { _getThemeColor } from "../../../config/Config";
 import "./StationOptions.css";
 import { useDispatch, useSelector } from "react-redux";
-import { AllStationOfMasterStation, stationBetween } from "../../../slices/StationSlice";
+import {
+  AllStationOfMasterStation,
+  stationBetween,
+} from "../../../slices/StationSlice";
 import { getFare } from "../../../slices/FareSlice";
 import { configureStore } from "@reduxjs/toolkit";
-
 
 const StationOptions = () => {
   const { id, from, to } = useParams();
@@ -31,8 +33,8 @@ const StationOptions = () => {
   const [End_Station_id, setEnd_Station_id] = useState(null);
   const [End_Station_Sno, setEnd_Station_Sno] = useState(null);
   const [SortBetweenData, setSortBetweenData] = useState([]);
-  const [IsJunction, setIsJunction] = useState(null);
-  
+  const [RouteChangeMessage, setRouteChangeMessage] = useState(null);
+
   // ------ get data from redux (start) ------------>
   const fareloading = useSelector((state) => state.fare.loading);
   const Fare = useSelector((state) => state.fare.fare);
@@ -42,7 +44,7 @@ const StationOptions = () => {
   const allstatonOfMaster = useSelector(
     (state) => state.station.AllStationMstr
   );
-  console.log("allstatonOfMaster",allstatonOfMaster);
+
   // console.log("stationBetween", stationBetweenValue);
   // -----------(end)-------------------------------->
   // -------- get color ---------------
@@ -62,49 +64,69 @@ const StationOptions = () => {
   /* --------getfare call funtion  ---------------------------------------------------*/
   const fareValue = async (from, to) => {
     const fare = dispatch(getFare({ from, to }));
-    
   };
   /* -------- station between  call funtion  ---------------------------------------------------*/
   const stationBitween = async (from, to) => {
     const bitween = dispatch(stationBetween({ from, to }));
-
   };
-  //***************   */ station summary from accounding to route id  **************
-  // console.log("allstationOfMaster",allstatonOfMaster)
-   useEffect(() => {
-    if (allstatonOfMaster !== null || allstatonOfMaster.length !== 0) {
-      allstatonOfMaster.forEach(async (item) => {
-        if (item.station_Name === stationOption.From) {
-         await setStart_Route_id(item.route_ID);
-         await setStart_Station_id(item.station_ID);
-         await setStart_Station_Sno(item.sno);
-        }
-        if (item.station_Name === stationOption.To) {
-         await setEnd_Route_id(item.route_ID);
-          await setEnd_Station_id(item.station_ID);
-          await setEnd_Station_Sno(item.sno);
-           console.log("End_Station_Sno",End_Station_Sno)
-        }
-      }); 
+
+  //  -------- call AllStationOfMasterStation method  -----------
+
+  useEffect(() => {
+    dispatch(AllStationOfMasterStation(id));
+  }, []);
+
+  useEffect(() => {
+    // debugger
+    if (
+      (allstatonOfMaster && allstatonOfMaster !== null) ||
+      (allstatonOfMaster && allstatonOfMaster.length !== 0)
+    ) {
+      if (stationOption.From && stationOption.To) {
+        allstatonOfMaster.forEach((item) => {
+          if (item.station_Name === stationOption.From) {
+            const statrRoute_id = item.route_ID;
+            const statrStation_id = item.station_ID;
+            const statrSno = item.sno;
+            setStart_Route_id(statrRoute_id);
+            setStart_Station_id(statrStation_id);
+            setStart_Station_Sno(statrSno);
+            // console.log("statrRoute_id",statrRoute_id)
+          }
+          if (item.station_Name === stationOption.To) {
+            const endRoute_id = item.route_ID;
+            const endStation_id = item.station_ID;
+            const endSno = item.sno;
+
+            setEnd_Route_id(endRoute_id);
+            setEnd_Station_id(endStation_id);
+            setEnd_Station_Sno(endSno);
+            // console.log("endRoute_id",endRoute_id)
+          }
+        });
+      } else {
+        console.log(" The 'From' and 'To' values are not found!");
+      }
     }
   }, [stationOption.From, stationOption.To]);
 
-  
   let StationVal = [];
-   const handleGetValue = () => {
+  const handleGetValue = () => {
     // debugger
-    if(allstatonOfMaster !== null || allstatonOfMaster.length !== 0){
+    if (allstatonOfMaster !== null || allstatonOfMaster.length !== 0) {
       if (
         Start_Route_id !== null &&
         End_Route_id !== null &&
         Start_Route_id === End_Route_id
       ) {
-        allstatonOfMaster.map((station) => {
+        // console.log("Start_Route_id",Start_Route_id);
+        // console.log("End_Route_id",End_Route_id);
+
+        allstatonOfMaster.forEach((station) => {
           if (
             station.sno >= Start_Station_Sno &&
             station.sno <= End_Station_Sno
           ) {
-          
             StationVal.push(station.station_Name);
             setSortBetweenData(StationVal);
           } else if (
@@ -116,58 +138,67 @@ const StationOptions = () => {
             setSortBetweenData(
               StationVal.sort(
                 (a, b) =>
-                allstatonOfMaster.findIndex((item) => item.station_Name === b) -
-                allstatonOfMaster.findIndex((item) => item.station_Name === a)
+                  allstatonOfMaster.findIndex(
+                    (item) => item.station_Name === b
+                  ) -
+                  allstatonOfMaster.findIndex((item) => item.station_Name === a)
               )
             );
-            // ------------ end sort ---------
+            // ------------ end sort ----------------------
           }
         });
-      } 
-      else {
+      } else {
+        // debugger
+
         if (
           Start_Route_id !== null &&
           End_Route_id !== null &&
           Start_Route_id !== End_Route_id
-        ){
-          allstatonOfMaster.map((station) => {
-            if (
-              station.sno >= Start_Station_Sno &&
-              station.sno <= End_Station_Sno
-            ) {
-              if(station.isJunction = "yes"){
-                setIsJunction(station);
+        ) {
+          let isJunctionSno = null;
+          allstatonOfMaster &&
+            allstatonOfMaster.forEach((station) => {
+              if (station && station.isJunction === "Yes") {
+                if (isJunctionSno === null || station.sno < isJunctionSno) {
+                  isJunctionSno = station.sno;
+                }
               }
-              StationVal.push(station.station_Name);
-              setSortBetweenData(StationVal);
-            } else if (
-              station.sno <= Start_Station_Sno &&
-              station.sno >= End_Station_Sno 
-            ) { 
-                if(station.isJunction = "yes"){
-                  setIsJunction(station);
+            });
+          allstatonOfMaster &&
+            allstatonOfMaster.forEach((station) => {
+              if (station.sno <= isJunctionSno) {
+                // console.log(station.station_Name);
+                StationVal.push(station.station_Name);
+                setSortBetweenData(StationVal);
               }
-              StationVal.push(station.station_Name);
-              // ---------- Sort in descending order based on the index ------------
-              setSortBetweenData(
-                StationVal.sort(
-                  (a, b) =>
-                  allstatonOfMaster.findIndex((item) => item.station_Name === b) -
-                  allstatonOfMaster.findIndex((item) => item.station_Name === a)
-                )
-              );
-              // ------------ end sort ---------
-            }
-  
-          });
+            });
+          const RouteChange = (
+            <p style={{ color: "yellow" }}> Here is Route Change </p>
+          );
+          setRouteChangeMessage(RouteChange);
+          StationVal.push(RouteChange);
+
+          console.log("allstatonOfMaster", allstatonOfMaster);
+          allstatonOfMaster &&
+            allstatonOfMaster.forEach((station) => {
+              // debugger
+              if (
+                station.sno > isJunctionSno &&
+                station.sno <= End_Station_Sno &&
+                station.route_ID === End_Route_id
+              ) {
+                console.log("station name ", station.station_Name);
+                StationVal.push(station.station_Name);
+                setSortBetweenData(StationVal);
+              }
+            });
         }
-      }     
-    } 
+      }
+    }
   };
 
   //**********************   end  ********************************
 
-  
   const GetAllData = () => {
     const cleanFromStation = from
       ? from.replace(/-/g, " ").replace(/ /g, " ")
@@ -180,18 +211,6 @@ const StationOptions = () => {
     stationBitween(cleanFromStation, splitcleanToStation);
     SetShow(true);
   };
-
-//  -------- call AllStationOfMasterStation method  -----------
-
-  useEffect(() => {
-    dispatch(AllStationOfMasterStation(id));
-  }, []);
-  
-   if (allstatonOfMaster === null || allstatonOfMaster.length === 0) {
-     return <HomeLoader />;
-   }
-
-
 
   /* -------- For from Station ---------------------------------------------------*/
   const handleStationChange = (e) => {
@@ -209,10 +228,11 @@ const StationOptions = () => {
       To: newToValue,
     }));
   };
- const getStationName = JSON.parse(localStorage.getItem("Station_Name")).name;
+  const getStationName = JSON.parse(localStorage.getItem("Station_Name")).name;
 
-
-
+  if (allstatonOfMaster === null || allstatonOfMaster.length === 0) {
+    return <HomeLoader />;
+  }
   return (
     <>
       <div className="container">
@@ -238,7 +258,7 @@ const StationOptions = () => {
                 }}
               >
                 <option value={ParamFromStation || ""}>
-                  {ParamFromStation  || "--Select--"}
+                  {ParamFromStation || "--Select--"}
                 </option>
                 {allstatonOfMaster.map((item, index) => {
                   return (
@@ -281,8 +301,8 @@ const StationOptions = () => {
               ).replace(/%20/g, "-")}-metro-station-${encodeURIComponent(
                 getStationName
               ).replace(/%20/g, "-")}`}
-              className="btn btn-outline-danger float-end text-warning"  
-              onClick={handleGetValue}         
+              className="btn btn-outline-danger float-end text-warning"
+              onClick={handleGetValue}
             >
               Get Fare
             </Link>
@@ -367,14 +387,16 @@ const StationOptions = () => {
                         <div className="col-md-2 col-2">
                           {/* route start symbol image */}
                           <div className="d-flex justify-content-center">
-                            <i
-                              className="bi bi-train-front"
-                              style={{
-                                background: "green",
-                                padding: 5,
-                                borderRadius: "100%",
-                              }}
-                            ></i>
+                             (
+                              <i
+                                className="bi bi-train-front"
+                                style={{
+                                  background: "green",
+                                  padding: 5,
+                                  borderRadius: "100%",
+                                }}
+                              ></i>
+                            ) 
                           </div>
 
                           {/* route image */}
@@ -395,14 +417,14 @@ const StationOptions = () => {
                           })}
                           {/* route end symbol icon */}
                           <div className="d-flex justify-content-center">
-                            <i
+                           { <i
                               className="bi bi-train-front"
                               style={{
                                 background: "red",
                                 padding: 5,
                                 borderRadius: "100%",
                               }}
-                            ></i>
+                            ></i>}
                           </div>
                         </div>
                         {/* all station from start to end  */}
@@ -410,7 +432,10 @@ const StationOptions = () => {
                           {SortBetweenData.map((items, index) => {
                             return (
                               <h6 className="p-2 text-white" key={index}>
-                                <i className="bi bi-train-front"></i>
+                                {RouteChangeMessage &&
+                                RouteChangeMessage ? null : (
+                                  <i className="bi bi-train-front"></i>
+                                )}
                                 &nbsp;&nbsp;
                                 <NavLink to={`/details/${items.station_Code}`}>
                                   <span

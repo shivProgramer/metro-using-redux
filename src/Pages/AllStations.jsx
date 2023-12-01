@@ -7,7 +7,6 @@ import TitleHeader from "../components/Static/Header/TitleHeader";
 // import { useParams } from "react-router-dom";
 const Lucknow = () => {
   const StationName = JSON.parse(localStorage.getItem("Station_Name")).name;
-  console.log(StationName);
   return (
     <>
       <div>
